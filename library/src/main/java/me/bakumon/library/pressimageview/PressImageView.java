@@ -1,12 +1,9 @@
 package me.bakumon.library.pressimageview;
 
 import android.content.Context;
-import android.graphics.Color;
+import android.content.res.TypedArray;
 import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
-import android.graphics.PorterDuff;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.LayerDrawable;
 import android.util.AttributeSet;
 import android.widget.ImageView;
 
@@ -17,155 +14,56 @@ import android.widget.ImageView;
 
 public class PressImageView extends ImageView {
 
+    private static final int PRESS_MODE_NONE = 0;  // 颜色直接改变
+    private static final int PRESS_MODE_RIPPLE = 1;  // 波纹点击效果
+
+    private int pressMode;
+
+    private ColorMatrix colorMatrix;
 
     public PressImageView(Context context) {
-        super(context);
+        this(context, null);
     }
 
     public PressImageView(Context context, AttributeSet attrs) {
-        super(context, attrs);
+        this(context, attrs ,0);
     }
 
     public PressImageView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        TypedArray ta = context.obtainStyledAttributes(attrs, R.styleable.PressImageView);
+
+        pressMode = ta.getInt(R.styleable.PressImageView_pressMode, PRESS_MODE_NONE);
+        float pressColorBrightness = ta.getFloat(R.styleable.PressImageView_pressColorBrightness, 0.85F);
+
+        if (pressColorBrightness < 0) {
+            pressColorBrightness = 0;
+        }
+        if (pressColorBrightness > 2) {
+            pressColorBrightness = 2;
+        }
+
+        colorMatrix = new ColorMatrix(new float[]{
+                pressColorBrightness, 0, 0, 0, 0,
+                0, pressColorBrightness, 0, 0, 0,
+                0, 0, pressColorBrightness, 0, 0,
+                0, 0, 0, 1, 0,});
+        ta.recycle();
     }
-
-    final ColorMatrix colorMatrix = new ColorMatrix(new float[]{
-            0.1F, 0, 0, 0, 0,
-            0, 0.1F, 0, 0, 0,
-            0, 0, 0.1F, 0, 0,
-            0, 0, 0, 1, 0,});
-    final ColorMatrix colorMatrix1 = new ColorMatrix(new float[]{
-            0.2F, 0, 0, 0, 0,
-            0, 0.2F, 0, 0, 0,
-            0, 0, 0.2F, 0, 0,
-            0, 0, 0, 1, 0,});
-    final ColorMatrix colorMatrix2 = new ColorMatrix(new float[]{
-            0.3F, 0, 0, 0, 0,
-            0, 0.3F, 0, 0, 0,
-            0, 0, 0.3F, 0, 0,
-            0, 0, 0, 1, 0,});
-    final ColorMatrix colorMatrix3 = new ColorMatrix(new float[]{
-            0.4F, 0, 0, 0, 0,
-            0, 0.4F, 0, 0, 0,
-            0, 0, 0.4F, 0, 0,
-            0, 0, 0, 1, 0,});
-    final ColorMatrix colorMatrix4 = new ColorMatrix(new float[]{
-            0.5F, 0, 0, 0, 0,
-            0, 0.5F, 0, 0, 0,
-            0, 0, 0.5F, 0, 0,
-            0, 0, 0, 1, 0,});
-    final ColorMatrix colorMatrix5 = new ColorMatrix(new float[]{
-            0.6F, 0, 0, 0, 0,
-            0, 0.6F, 0, 0, 0,
-            0, 0, 0.6F, 0, 0,
-            0, 0, 0, 1, 0,});
-    final ColorMatrix colorMatrix6 = new ColorMatrix(new float[]{
-            0.7F, 0, 0, 0, 0,
-            0, 0.7F, 0, 0, 0,
-            0, 0, 0.7F, 0, 0,
-            0, 0, 0, 1, 0,});
-    final ColorMatrix colorMatrix7 = new ColorMatrix(new float[]{
-            0.8F, 0, 0, 0, 0,
-            0, 0.8F, 0, 0, 0,
-            0, 0, 0.8F, 0, 0,
-            0, 0, 0, 1, 0,});
-    final ColorMatrix colorMatrix8 = new ColorMatrix(new float[]{
-            0.9F, 0, 0, 0, 0,
-            0, 0.9F, 0, 0, 0,
-            0, 0, 0.9F, 0, 0,
-            0, 0, 0, 1, 0,});
-    final ColorMatrix colorMatrix9 = new ColorMatrix(new float[]{
-            1, 0, 0, 0, 0,
-            0, 1, 0, 0, 0,
-            0, 0, 1, 0, 0,
-            0, 0, 0, 1, 0,});
-
 
     @Override
     protected void dispatchSetPressed(boolean pressed) {
         super.dispatchSetPressed(pressed);
-
-        Drawable[] drawables = new Drawable[2];
-        drawables[0] = getDrawable();
-
-        LayerDrawable layerDrawable = new LayerDrawable(drawables);
-
         if (pressed) {
-            setClickable(false);
-            postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    getDrawable().setColorFilter(new ColorMatrixColorFilter(colorMatrix9));
-                }
-            }, 100);
+            if (pressMode == PRESS_MODE_NONE) {
+                getDrawable().setColorFilter(new ColorMatrixColorFilter(colorMatrix));
+            } else if (pressMode == PRESS_MODE_RIPPLE) {
+                // TODO: 17-6-24 波纹点击效果
+                getDrawable().setColorFilter(new ColorMatrixColorFilter(colorMatrix));
+            }
 
-            postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    getDrawable().setColorFilter(new ColorMatrixColorFilter(colorMatrix8));
-                }
-            }, 200);
-
-            postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    getDrawable().setColorFilter(new ColorMatrixColorFilter(colorMatrix7));
-                }
-            }, 300);
-
-            postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    getDrawable().setColorFilter(new ColorMatrixColorFilter(colorMatrix6));
-                }
-            }, 400);
-
-            postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    getDrawable().setColorFilter(new ColorMatrixColorFilter(colorMatrix5));
-                }
-            }, 500);
-
-            postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    getDrawable().setColorFilter(new ColorMatrixColorFilter(colorMatrix4));
-                }
-            }, 600);
-
-            postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    getDrawable().setColorFilter(new ColorMatrixColorFilter(colorMatrix3));
-                }
-            }, 700);
-
-            postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    getDrawable().setColorFilter(new ColorMatrixColorFilter(colorMatrix2));
-                }
-            }, 800);
-
-            postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    getDrawable().setColorFilter(new ColorMatrixColorFilter(colorMatrix1));
-                }
-            }, 900);
-
-            postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    getDrawable().setColorFilter(new ColorMatrixColorFilter(colorMatrix));
-                    getDrawable().clearColorFilter();
-                    setClickable(true);
-                }
-            }, 1000);
         } else {
-            getDrawable().clearColorFilter();
+            getDrawable().setColorFilter(null);
         }
     }
 }
