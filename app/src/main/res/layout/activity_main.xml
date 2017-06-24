@@ -9,9 +9,9 @@
 
     <me.bakumon.library.pressimageview.PressImageView
         android:layout_width="200dp"
-        android:layout_height="wrap_content"
-        android:id="@+id/imageveiw"
-        app:pressColorBrightness="0.8"
+        android:layout_height="270dp"
+        android:id="@+id/press_imageview"
+        app:pressColorBrightness="0.5"
         android:clickable="true"
         android:src="@drawable/image" />
 
