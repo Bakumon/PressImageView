@@ -9,7 +9,7 @@
 
 ## Preview
 
-![](https://github.com/Bakumon/PressImageView/raw/master/art/PressImageView.gif)
+<image src="https://github.com/Bakumon/PressImageView/raw/master/art/PressImageView.gif" alt="PressImageView.gif" height="300"/>
 
 ## Usage
 
@@ -25,7 +25,7 @@
 
 |xml 属性|说明|
 |--|--|
-|pressColorBrightness|0~2之间的浮点数，0最暗，1无效过，2最亮|
+|pressColorBrightness|0~2之间的浮点数，0最暗，1无效果，2最亮|
 
 |java 方法|说明|
 |--|--|
