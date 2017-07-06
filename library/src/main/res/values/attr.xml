@@ -2,9 +2,5 @@
 <resources>
     <declare-styleable name="PressImageView">
         <attr name = "pressColorBrightness" format="float" />
-        <attr name="pressMode">
-            <enum name="none" value="0" />
-            <enum name="fade" value="1" />
-        </attr>
     </declare-styleable>
 </resources>

@@ -5,7 +5,6 @@ import android.content.res.TypedArray;
 import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
 import android.support.annotation.FloatRange;
-import android.support.annotation.IntDef;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.widget.ImageView;
@@ -17,14 +16,9 @@ import android.widget.ImageView;
 
 public class PressImageView extends ImageView {
 
-    @IntDef({PRESS_MODE_NONE, PRESS_MODE_RIPPLE})
-    private @interface PressMode {
-    }
+    // 默认颜色矩阵系数
+    private static final float DEFAULT_BRIGHTNESS = 0.85F;
 
-    public static final int PRESS_MODE_NONE = 0;  // 颜色直接改变
-    public static final int PRESS_MODE_RIPPLE = 1;  // 波纹点击效果
-
-    private int pressMode;
     @FloatRange(from = 0.0, to = 2.0)
     private float pressColorBrightness;
 
@@ -40,8 +34,7 @@ public class PressImageView extends ImageView {
         super(context, attrs, defStyleAttr);
         TypedArray ta = context.obtainStyledAttributes(attrs, R.styleable.PressImageView);
 
-        pressMode = ta.getInt(R.styleable.PressImageView_pressMode, PRESS_MODE_NONE);
-        pressColorBrightness = ta.getFloat(R.styleable.PressImageView_pressColorBrightness, 0.85F);
+        pressColorBrightness = ta.getFloat(R.styleable.PressImageView_pressColorBrightness, DEFAULT_BRIGHTNESS);
 
         ta.recycle();
     }
@@ -50,36 +43,34 @@ public class PressImageView extends ImageView {
         this.pressColorBrightness = pressColorBrightness;
     }
 
-    public void setPressMode(@PressMode int pressMode) {
-        this.pressMode = pressMode;
-    }
-
     @Override
     protected void dispatchSetPressed(boolean pressed) {
         super.dispatchSetPressed(pressed);
         if (pressed) {
-            // 校验 pressColorBrightness 的合法性
-            if (pressColorBrightness < 0) {
-                pressColorBrightness = 0;
-            }
-            if (pressColorBrightness > 2) {
-                pressColorBrightness = 2;
-            }
-            // 创建颜色矩阵
-            ColorMatrix colorMatrix = new ColorMatrix(new float[]{
-                    pressColorBrightness, 0, 0, 0, 0,
-                    0, pressColorBrightness, 0, 0, 0,
-                    0, 0, pressColorBrightness, 0, 0,
-                    0, 0, 0, 1, 0,});
-            if (pressMode == PRESS_MODE_RIPPLE) {
-                // TODO: 17-6-24 波纹点击效果
-                getDrawable().setColorFilter(new ColorMatrixColorFilter(colorMatrix));
-            } else { // pressMode 不合法时，默认为 PRESS_MODE_NONE
-                getDrawable().setColorFilter(new ColorMatrixColorFilter(colorMatrix));
-            }
-
+            setDrawableColorFilter();
         } else {
             getDrawable().setColorFilter(null);
         }
+    }
+
+    /**
+     * 设置 drawable 的按下效果
+     */
+    private void setDrawableColorFilter() {
+        // 校验 pressColorBrightness 的合法性
+        if (pressColorBrightness < 0) {
+            pressColorBrightness = 0;
+        }
+        if (pressColorBrightness > 2) {
+            pressColorBrightness = 2;
+        }
+        // 创建颜色矩阵
+        ColorMatrix colorMatrix = new ColorMatrix(new float[]{
+                pressColorBrightness, 0, 0, 0, 0,
+                0, pressColorBrightness, 0, 0, 0,
+                0, 0, pressColorBrightness, 0, 0,
+                0, 0, 0, 1, 0,});
+
+        getDrawable().setColorFilter(new ColorMatrixColorFilter(colorMatrix));
     }
 }
