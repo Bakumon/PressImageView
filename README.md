@@ -33,7 +33,9 @@
 
 ## TODO
 
-- [ ] Ripple 或其他效果
+- [ ] Ripple 效果
+- [ ] 图标跳动效果
+- [ ] 缩放效果
 
 ## License
 
